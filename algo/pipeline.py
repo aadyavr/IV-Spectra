@@ -1,23 +1,19 @@
 class Pipeline:
 
     def __init__(self):
-
         pass
 
-    def process(
+    def process(self, voltage, current):
 
-        self,
+        results = {
+            "voltage": voltage,
+            "current": current,
+            "background": None,
+            "residual": None,
+            "noise": None,
+            "telegraph": None,
+            "step_indices": None,
+            "transition_voltages": None
+        }
 
-        voltage,
-
-        current
-
-    ):
-
-        result = {}
-
-        result["voltage"] = voltage
-
-        result["current"] = current
-
-        return result
+        return results
