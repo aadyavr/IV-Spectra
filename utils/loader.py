@@ -2,12 +2,16 @@ import pandas as pd
 
 
 class CSVLoader:
+    """
+    Loads the experimental CSV and returns
+    voltage/current data for a selected File.
+    """
 
     def __init__(self):
-
         self.df = None
 
     def load_file(self, filepath):
+        """Load CSV file."""
 
         self.df = pd.read_csv(
             filepath,
@@ -15,14 +19,16 @@ class CSVLoader:
             engine="python"
         )
 
-        self.df.columns = (
-            self.df.columns
-            .str.strip()
-        )
+        # Remove extra spaces from column names
+        self.df.columns = self.df.columns.str.strip()
+
+        if "File" not in self.df.columns:
+            raise ValueError("'File' column not found.")
 
         return self.df
 
     def get_file_numbers(self):
+        """Return all unique file numbers."""
 
         return (
             self.df["File"]
@@ -32,26 +38,26 @@ class CSVLoader:
         )
 
     def get_current_columns(self):
+        """Return all current columns."""
 
-        return [
+        current_columns = []
 
-            c
+        for col in self.df.columns:
 
-            for c in self.df.columns
+            if "y" in col.lower():
 
-            if "y" in c.lower()
+                current_columns.append(col)
 
-        ]
+        return current_columns
 
-    def get_curve(
-            self,
-            file_number,
-            current_column
-    ):
+    def get_curve(self, file_number, current_column):
+        """
+        Returns voltage and current arrays
+        for one experiment.
+        """
 
         row = self.df[
-            self.df["File"]
-            .astype(str)
+            self.df["File"].astype(str)
             ==
             str(file_number)
         ]
@@ -72,10 +78,7 @@ class CSVLoader:
             current.notna()
         )
 
-        return (
+        voltage = voltage[mask].reset_index(drop=True)
+        current = current[mask].reset_index(drop=True)
 
-            voltage[mask].reset_index(drop=True),
-
-            current[mask].reset_index(drop=True)
-
-        )
+        return voltage, current
